@@ -49,7 +49,7 @@ func getcdockercid(pid string) string  {
 
 func main() {
     if len(os.Args) < 2 {
-    	panic("usage: pxvol volid")
+        panic("usage: pxvol volid")
     }
 
     vol := os.Args[1]
