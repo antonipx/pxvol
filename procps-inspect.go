@@ -76,13 +76,12 @@ func getcdockercid(pid string) string  {
 
 func dockerinspect(cid string) {
 
-    inspect, err := docker.ContainerInspect(context.Background(), cid)
+    i, err := docker.ContainerInspect(context.Background(), cid)
     if err != nil {
         panic(err)
     }
 
-    for 
-    fmt.Println("Inspect:", inspect.Config.Image, inspect.Mounts[0].Driver)
+    fmt.Println("Inspect:", i.Config.Image, i.Config.Cmd, i.Config.Volumes, i.Mounts[0])
 
     
 }
