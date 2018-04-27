@@ -10,6 +10,37 @@ import (
 
 )
 
+func findvol(vol string) map[string]int {
+    cids := make(map[string]int)
+
+    pids, err := ioutil.ReadDir("/proc")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    for _, pid := range pids {
+        if pid.IsDir() && pid.Name()[0] >= '1' && pid.Name()[0] <= '9' {
+
+            //fmt.Println("/proc/" + pid.Name() + "/mounts")
+            mounts, err := os.Open("/proc/" + pid.Name() + "/mounts")
+            if err == nil {
+                defer mounts.Close()
+                scanner := bufio.NewScanner(mounts)
+                scanner.Split(bufio.ScanLines)
+                for scanner.Scan() {
+                    f := strings.Fields(scanner.Text())
+                    //fmt.Println("  ", f[0], f[1])
+                    if f[0] == "/dev/pxd/pxd" + vol && ! strings.HasPrefix(f[1], "/var/lib/osd/mounts") {
+                        cids[getcdockercid(pid.Name())] = 1
+                    }
+                }
+            }
+        }
+    }
+
+    return cids
+}
+
 func getcdockercid(pid string) string  {
     cgroup, err := os.Open("/proc/" + pid + "/cgroup")
     if err == nil {
@@ -40,40 +71,12 @@ func getcdockercid(pid string) string  {
 
 func main() {
     if len(os.Args) < 2 {
-    	panic("usage: pxvol volid")
+        panic("usage: pxvol volid")
     }
 
-    vol := os.Args[1]
-
-    cids := make(map[string]int)
-
-    pids, err := ioutil.ReadDir("/proc")
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    for _, pid := range pids {
-        if pid.IsDir() && pid.Name()[0] >= '1' && pid.Name()[0] <= '9' {
-
-            //fmt.Println("/proc/" + pid.Name() + "/mounts")
-            mounts, err := os.Open("/proc/" + pid.Name() + "/mounts")
-            if err == nil {
-                defer mounts.Close()
-                scanner := bufio.NewScanner(mounts)
-                scanner.Split(bufio.ScanLines)
-                for scanner.Scan() {
-                    f := strings.Fields(scanner.Text())
-                    //fmt.Println("  ", f[0], f[1])
-                    if f[0] == "/dev/pxd/pxd" + vol && ! strings.HasPrefix(f[1], "/var/lib/osd/mounts") {
-                        cids[getcdockercid(pid.Name())] = 1
-                        
-                    }
-                }
-            }
-        }
-    }
+    cids := findvol(os.Args[1])
 
     for key, _ := range cids {
-    	fmt.Println(key)
+        fmt.Println(key)
     }
 }
