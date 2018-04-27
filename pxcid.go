@@ -1,8 +1,3 @@
-// go get github.com/docker/docker/client
-// go get golang.org/x/net/context
-// https://godoc.org/github.com/docker/docker/api/types#ContainerJSON
-// https://docs.docker.com/develop/sdk/examples/
-
 package main
 
 import (
@@ -12,11 +7,7 @@ import (
     "fmt"
     "bufio"
     "strings"
-    //"encoding/json"
 
-    //"github.com/docker/docker/api/types"
-    "github.com/docker/docker/client"
-    "golang.org/x/net/context"
 )
 
 func getcdockercid(pid string) string  {
@@ -54,10 +45,7 @@ func main() {
 
     vol := os.Args[1]
 
-    docker, err := client.NewEnvClient()
-    if err != nil {
-        panic(err)
-    }
+    cids := make(map[string]int)
 
     pids, err := ioutil.ReadDir("/proc")
     if err != nil {
@@ -77,19 +65,15 @@ func main() {
                     f := strings.Fields(scanner.Text())
                     //fmt.Println("  ", f[0], f[1])
                     if f[0] == "/dev/pxd/pxd" + vol && ! strings.HasPrefix(f[1], "/var/lib/osd/mounts") {
-                        cid := getcdockercid(pid.Name())
-                        if cid != "host" {
-                            fmt.Println("mnt:", pid.Name(), f[1], cid)
-                            inspect, err := docker.ContainerInspect(context.Background(), cid)
-                            if err == nil {
-
-                                fmt.Println("Inspect:", inspect.Mounts[0].Driver)
-
-                            }
-                        }
+                        cids[getcdockercid(pid.Name())] = 1
+                        
                     }
                 }
             }
         }
+    }
+
+    for key, _ := range cids {
+    	fmt.Println(key)
     }
 }
