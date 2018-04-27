@@ -80,8 +80,9 @@ func dockerinspect(cid string) {
     if err != nil {
         panic(err)
     }
-    
-    fmt.Println("Inspect:", inspect.Mounts[0].Driver)
+
+    for 
+    fmt.Println("Inspect:", inspect.Config.Image, inspect.Mounts[0].Driver)
 
     
 }
