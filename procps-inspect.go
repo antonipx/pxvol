@@ -70,7 +70,6 @@ func getcdockercid(pid string) string  {
     }
 
 
-
     return "host"
 }
 
@@ -81,7 +80,9 @@ func dockerinspect(cid string) {
         panic(err)
     }
 
-    fmt.Println("Inspect:", i.Config.Image, i.Config.Cmd, i.Config.Volumes, i.Mounts[0])
+    fmt.Println("Name: \t", i.Name, "\nImg: \t", i.Config.Image, "\nArgs: \t", 
+    i.Args, "\nCmd: \t", i.Config.Cmd, "\nEntr: \t", i.Config.Entrypoint, "\nPath: \t", i.Path,
+    "\nVol: \t", i.Config.Volumes, "\nMnt: \t", i.Mounts[0],)
 
     
 }
@@ -101,6 +102,11 @@ func main() {
     cids := findvol(os.Args[1])
 
     for key, _ := range cids {
-        dockerinspect(key)
+    	if key == "host" {
+    		fmt.Println("host mounted")
+    	} else {
+    		fmt.Println("ID: \t", key)
+      	  	dockerinspect(key)
+    	}
     }
 }
