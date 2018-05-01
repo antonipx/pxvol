@@ -80,10 +80,12 @@ func dockerinspect(cid string) {
         panic(err)
     }
 
-    fmt.Println("Name: \t", i.Name, "\nImg: \t", i.Config.Image, "\nArgs: \t", 
-    i.Args, "\nCmd: \t", i.Config.Cmd, "\nEntr: \t", i.Config.Entrypoint, "\nPath: \t", i.Path,
-    "\nVol: \t", i.Config.Volumes, "\nMnt: \t", i.Mounts[0],)
-
+    for _, m := range i.Mounts {
+	    if m.Driver == "pxd"  {
+	        fmt.Println("Name:\t", i.Name, "\nImg:\t", i.Config.Image, "\nArgs:\t", i.Args, "\nCmd:\t", "\nPath:\t", i.Path)
+	        fmt.Println("Mount:\t", m.Name, ":", m.Driver, ":", m.Source, ":", m.Destination)
+	    }
+	}
     
 }
 

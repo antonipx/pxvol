@@ -23,23 +23,29 @@ import (
 
 var docker *client.Client
 
-func dockerinspect(cid string) {
+func findcontainer(cid string) {
 
     i, err := docker.ContainerInspect(context.Background(), cid)
     if err != nil {
         panic(err)
     }
 
-    fmt.Println("Name:\t", i.Name, "\nImg:\t", i.Config.Image, "\nArgs:\t", i.Args, "\nCmd:\t", "\nPath:\t", i.Path)
 
     for _, m := range i.Mounts {
-        fmt.Println("Mount:\t", m.Driver, ":", m.Source, ":", m.Destination)
+        if m.Driver == "pxd" && m.Name == os.Args[1] {
+            fmt.Println("ID:\t", i.ID, "\nName:\t", i.Name, "\nImg:\t", i.Config.Image, "\nArgs:\t", i.Args, "\nCmd:\t", "\nPath:\t", i.Path)
+            fmt.Println("Mount:\t", m.Name, ":", m.Driver, ":", m.Source, ":", m.Destination)
+        }
     }
 
     
 }
 
 func main() {
+    if len(os.Args) < 2 {
+        panic("Usage: dockerps <volname>")
+    }
+
     var err error
 
     docker, err = client.NewEnvClient()
@@ -47,18 +53,13 @@ func main() {
         panic(err)
     }
 
-    if len(os.Args) < 2 {
-        cids, err := docker.ContainerList(context.Background(), types.ContainerListOptions{})
-        if err != nil {
-            panic(err)
-        }
-    
-        for _, c := range cids {
-            dockerinspect(c.ID)
-        }
-    } else {
-        dockerinspect(os.Args[1])
+    cids, err := docker.ContainerList(context.Background(), types.ContainerListOptions{})
+    if err != nil {
+        panic(err)
     }
-    
+
+    for _, c := range cids {
+        findcontainer(c.ID)
+    }
 
 }
