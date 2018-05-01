@@ -8,7 +8,12 @@ import (
     "bufio"
     "strings"
 
+    "github.com/docker/docker/client"
+    "golang.org/x/net/context"
+
 )
+
+var docker *client.Client
 
 func findvol(vol string) map[string]int {
     cids := make(map[string]int)
@@ -65,8 +70,21 @@ func getcdockercid(pid string) string  {
     }
 
 
-
     return "host"
+}
+
+func dockerinspect(cid string) {
+
+    i, err := docker.ContainerInspect(context.Background(), cid)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Println("Name: \t", i.Name, "\nImg: \t", i.Config.Image, "\nArgs: \t", 
+    i.Args, "\nCmd: \t", i.Config.Cmd, "\nEntr: \t", i.Config.Entrypoint, "\nPath: \t", i.Path,
+    "\nVol: \t", i.Config.Volumes, "\nMnt: \t", i.Mounts[0],)
+
+    
 }
 
 func main() {
@@ -74,9 +92,21 @@ func main() {
         panic("usage: pxvol volid")
     }
 
+    var err error
+
+    docker, err = client.NewEnvClient()
+    if err != nil {
+        panic(err)
+    }
+
     cids := findvol(os.Args[1])
 
     for key, _ := range cids {
-        fmt.Println(key)
+    	if key == "host" {
+    		fmt.Println("host mounted")
+    	} else {
+    		fmt.Println("ID: \t", key)
+      	  	dockerinspect(key)
+    	}
     }
 }
