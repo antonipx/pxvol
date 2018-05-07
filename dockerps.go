@@ -23,7 +23,7 @@ import (
 
 var docker *client.Client
 
-func findcontainer(cid string) {
+func findcontainer(cid string, volname string) {
 
     i, err := docker.ContainerInspect(context.Background(), cid)
     if err != nil {
@@ -32,7 +32,7 @@ func findcontainer(cid string) {
 
 
     for _, m := range i.Mounts {
-        if m.Driver == "pxd" && m.Name == os.Args[1] {
+        if m.Driver == "pxd" && m.Name == volname {
             fmt.Println("ID:\t", i.ID, "\nName:\t", i.Name, "\nImg:\t", i.Config.Image, "\nArgs:\t", i.Args, "\nCmd:\t", "\nPath:\t", i.Path)
             fmt.Println("Mount:\t", m.Name, ":", m.Driver, ":", m.Source, ":", m.Destination)
         }
@@ -59,7 +59,7 @@ func main() {
     }
 
     for _, c := range cids {
-        findcontainer(c.ID)
+        findcontainer(c.ID, os.Args[1])
     }
 
 }
