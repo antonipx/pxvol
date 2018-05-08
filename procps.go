@@ -57,10 +57,10 @@ func getcdockercid(pid string) string  {
             // this can be any other cgroup
             if f[1] == "pids" {
                 d := strings.Split(f[2], "/")
-                // todo k8s
                 if d[1] == "docker" && len(d[2]) > 0 {
-                    //fmt.Println(">>> DOCKER:", pid, f[1], d[0], d[1])
                     return d[2]
+                } else if d[1] == "kubepods" && len(d[4]) > 0 {
+                	return d[4]
                 } else {
                     return "host"
                 }
@@ -81,7 +81,7 @@ func dockerinspect(cid string) {
     }
 
     for _, m := range i.Mounts {
-	    if m.Driver == "pxd"  {
+	    if m.Driver == "pxd" || strings.Contains(m.Source, "kubernetes.io~portworx-volume")  {
 	        fmt.Println("Name:\t", i.Name, "\nImg:\t", i.Config.Image, "\nArgs:\t", i.Args, "\nCmd:\t", "\nPath:\t", i.Path)
 	        fmt.Println("Mount:\t", m.Name, ":", m.Driver, ":", m.Source, ":", m.Destination)
 	    }
