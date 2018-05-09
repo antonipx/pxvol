@@ -36,7 +36,7 @@ func findvol(vol string) map[string]int {
                     f := strings.Fields(scanner.Text())
                     //fmt.Println("  ", f[0], f[1])
                     if (f[0] == "/dev/pxd/pxd" + vol && ! strings.HasPrefix(f[1], "/var/lib/osd/mounts")) || strings.Contains(f[1], "kubernetes.io~portworx-volume/" + vol) {
-						fmt.Println(">>> ", pid.Name())
+                        fmt.Println(">>> ", pid.Name())
                         cids[getcdockercid(pid.Name())] = 1
                     }
                 }
