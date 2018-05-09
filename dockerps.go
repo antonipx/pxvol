@@ -8,12 +8,9 @@
 package main
 
 import (
-//    "io/ioutil"
     "os"
-//    "log"
     "fmt"
-//    "bufio"
-//    "strings"
+    "strings"
 
     "github.com/docker/docker/api/types"
     "github.com/docker/docker/client"
@@ -32,7 +29,7 @@ func findcontainer(cid string, volname string) {
 
 
     for _, m := range i.Mounts {
-        if m.Driver == "pxd" && m.Name == volname {
+        if (m.Driver == "pxd" && m.Name == volname) || strings.Contains(m.Source, "kubernetes.io~portworx-volume/" + volname)  {
             fmt.Println("ID:\t", i.ID, "\nName:\t", i.Name, "\nImg:\t", i.Config.Image, "\nArgs:\t", i.Args, "\nCmd:\t", "\nPath:\t", i.Path)
             fmt.Println("Mount:\t", m.Name, ":", m.Driver, ":", m.Source, ":", m.Destination)
         }
