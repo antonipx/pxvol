@@ -35,8 +35,8 @@ func findvol(vol string) map[string]int {
                 for scanner.Scan() {
                     f := strings.Fields(scanner.Text())
                     //fmt.Println("  ", f[0], f[1])
-                    if (f[0] == "/dev/pxd/pxd" + vol && ! strings.HasPrefix(f[1], "/var/lib/osd/mounts")) || strings.Contains(f[1], "kubernetes.io~portworx-volume/" + vol) {
-                        fmt.Println(">>> ", pid.Name())
+                    if (f[0] == "/dev/pxd/pxd" + vol && ! strings.HasPrefix(f[1], "/var/lib/osd/mounts") && ! strings.Contains(f[1], "kubernetes.io~portworx-volume/") ) {
+                        //fmt.Println(">>> ", pid.Name(), f[0], f[1])
                         cids[getcdockercid(pid.Name())] = 1
                     }
                 }
@@ -75,7 +75,6 @@ func getcdockercid(pid string) string  {
 }
 
 func dockerinspect(cid string) {
-
     i, err := docker.ContainerInspect(context.Background(), cid)
     if err != nil {
         panic(err)
@@ -109,7 +108,7 @@ func main() {
             fmt.Println("host mounted")
         } else {
             fmt.Println("ID: \t", key)
-                dockerinspect(key)
+            dockerinspect(key)
         }
     }
 }
