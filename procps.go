@@ -1,14 +1,13 @@
 package main
 
 import (
-    "io/ioutil"
-    "os"
-    "log"
-    "fmt"
     "bufio"
+    "fmt"
+    "io/ioutil"
+    "log"
+    "os"
     "strings"
 )
-
 
 func findvol(vol string) map[string]string {
     cids := make(map[string]string)
@@ -30,12 +29,12 @@ func findvol(vol string) map[string]string {
                 for scanner.Scan() {
                     f := strings.Fields(scanner.Text())
                     //fmt.Println("  ", f[0], f[1])
-                    if (f[0] == "/dev/pxd/pxd" + vol && ! strings.HasPrefix(f[1], "/var/lib/osd/mounts") && ! strings.Contains(f[1], "kubernetes.io~portworx-volume/") ) {
+                    if f[0] == "/dev/pxd/pxd"+vol && !strings.HasPrefix(f[1], "/var/lib/osd/mounts") && !strings.Contains(f[1], "kubernetes.io~portworx-volume/") {
                         //fmt.Println(">>> ", pid.Name(), f[0], f[1])
-						id := getcdockercid(pid.Name()) 
+                        id := getcdockercid(pid.Name())
                         //cids[id] = f[1]
-                        if ! strings.Contains(cids[id], f[1]) { //TODO: rewrite as slice contains instead of string
-                        	cids[id]=cids[id] + "\n  " + f[1]
+                        if !strings.Contains(cids[id], f[1]) { //TODO: rewrite as slice contains instead of string
+                            cids[id] = cids[id] + "\n  " + f[1]
                         }
                     }
                 }
@@ -46,7 +45,7 @@ func findvol(vol string) map[string]string {
     return cids
 }
 
-func getcdockercid(pid string) string  {
+func getcdockercid(pid string) string {
     cgroup, err := os.Open("/proc/" + pid + "/cgroup")
     if err == nil {
         defer cgroup.Close()
@@ -71,12 +70,11 @@ func getcdockercid(pid string) string  {
     return "unknown"
 }
 
-
 func main() {
     if len(os.Args) < 2 {
-        panic("usage: pxvol volid")
+        fmt.Println("usage: pxvol volume_id")
+        os.Exit(1)
     }
-
 
     cids := findvol(os.Args[1])
 
