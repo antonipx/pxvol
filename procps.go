@@ -29,7 +29,7 @@ func findvol(vol string) map[string]string {
                 for scanner.Scan() {
                     f := strings.Fields(scanner.Text())
                     //fmt.Println("  ", f[0], f[1])
-                    if f[0] == "/dev/pxd/pxd"+vol && !strings.HasPrefix(f[1], "/var/lib/osd/mounts") && !strings.Contains(f[1], "kubernetes.io~portworx-volume/") {
+                    if (f[0] == "/dev/pxd/pxd"+vol || f[0] == "pxfs"+vol) && !strings.HasPrefix(f[1], "/var/lib/osd/mounts") && !strings.Contains(f[1], "kubernetes.io~portworx-volume/") && !strings.HasPrefix(f[1], "/pxmounts/") {
                         //fmt.Println(">>> ", pid.Name(), f[0], f[1])
                         id := getcdockercid(pid.Name())
                         //cids[id] = f[1]
