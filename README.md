@@ -14,3 +14,10 @@ Usage
 * procps volumeID
 
 Note procps uses numeric Portworx volume ID while dockerps uses name.
+
+Example
+-------
+
+* dockerps myvol
+
+* procps 454564578
