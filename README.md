@@ -9,8 +9,8 @@ Find who has mounted Portworx volume.
 Usage
 -----
 
-* dockerps <volumeName>
+* dockerps volumeName
 
-* procps <volumeID>
+* procps volumeID
 
 Note procps uses numeric Portworx volume ID while dockerps uses name.
