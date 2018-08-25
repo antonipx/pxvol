@@ -23,7 +23,6 @@ func findvol(vol string) map[string]string {
             //fmt.Println("/proc/" + pid.Name() + "/mounts")
             mounts, err := os.Open("/proc/" + pid.Name() + "/mounts")
             if err == nil {
-                defer mounts.Close()
                 scanner := bufio.NewScanner(mounts)
                 scanner.Split(bufio.ScanLines)
                 for scanner.Scan() {
@@ -38,6 +37,7 @@ func findvol(vol string) map[string]string {
                         }
                     }
                 }
+                mounts.Close()
             }
         }
     }
